@@ -39,3 +39,5 @@ docs/build
 # OS X
 .DS_Store
 
+# log files
+*.log
