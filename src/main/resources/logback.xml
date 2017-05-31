@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration>
+    <!-- Prevent Spring trying to log to /tmp/spring.log on Linux hosts. This needs to be before
+    the defaults include -->
+    <property name="LOG_TEMP" value="./logs" />
     <include resource="org/springframework/boot/logging/logback/defaults.xml"/>
     <property name="LOG_FILE" value="${LOG_FILE:-${LOG_PATH:-${LOG_TEMP:-${java.io.tmpdir:-/tmp}}/}spring.log}"/>
     <!-- Uncomment here and below to allow console logging too -->
