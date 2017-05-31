@@ -2,6 +2,7 @@ package io.blk.erc20;
 
 import com.google.common.base.Predicates;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.Banner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
@@ -26,7 +27,9 @@ import org.web3j.quorum.Quorum;
 public class Application {
 
     public static void main(String[] args) {
-        SpringApplication.run(Application.class, args);
+        SpringApplication application = new SpringApplication(Application.class);
+        application.setBannerMode(Banner.Mode.OFF);
+        application.run(args);
     }
 
     @Autowired
