@@ -31,13 +31,10 @@ gradle-app.setting
 
 .idea
 *.iml
-geth.sh
-
-# Sphinx generated docs
-docs/build
 
 # OS X
 .DS_Store
 
 # log files
 *.log
+logs
