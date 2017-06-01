@@ -67,7 +67,7 @@ public class ContractService {
     public String name(String contractAddress) {
         HumanStandardToken humanStandardToken = load(contractAddress);
         try {
-            return humanStandardToken.name().get().getValue();
+            return extractValue(humanStandardToken.name().get());
         } catch (InterruptedException | ExecutionException e) {
             throw new RuntimeException(e);
         }
@@ -199,7 +199,7 @@ public class ContractService {
         if (value != null) {
             return value.getValue();
         } else {
-            throw new RuntimeException("Null value returned by call");
+            throw new RuntimeException("Empty value returned by call");
         }
     }
 
