@@ -4,16 +4,22 @@ import java.math.BigInteger;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
+import java.util.function.Function;
 
+import lombok.Getter;
+import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
 import org.web3j.abi.datatypes.Address;
 import org.web3j.abi.datatypes.DynamicBytes;
+import org.web3j.abi.datatypes.Type;
+import org.web3j.abi.datatypes.Uint;
 import org.web3j.abi.datatypes.Utf8String;
 import org.web3j.abi.datatypes.generated.Uint256;
 import org.web3j.abi.datatypes.generated.Uint8;
 import io.blk.erc20.generated.HumanStandardToken;
+import org.springframework.stereotype.Service;
+
 import org.web3j.protocol.core.methods.response.TransactionReceipt;
 import org.web3j.quorum.Quorum;
 import org.web3j.quorum.tx.ClientTransactionManager;
@@ -23,17 +29,17 @@ import static org.web3j.tx.Contract.GAS_LIMIT;
 import static org.web3j.tx.ManagedTransaction.GAS_PRICE;
 
 /**
- * Our contract service.
+ * Our smart contract service.
  */
 @Service
-public class ERC20Service {
+public class ContractService {
 
     private final Quorum quorum;
 
     private final NodeConfiguration nodeConfiguration;
 
     @Autowired
-    public ERC20Service(Quorum quorum, NodeConfiguration nodeConfiguration) {
+    public ContractService(Quorum quorum, NodeConfiguration nodeConfiguration) {
         this.quorum = quorum;
         this.nodeConfiguration = nodeConfiguration;
     }
@@ -67,13 +73,13 @@ public class ERC20Service {
         }
     }
 
-    public String approve(
+    public TransactionResponse<ApprovalEventResponse> approve(
             List<String> privateFor, String contractAddress, String spender, long value) {
         HumanStandardToken humanStandardToken = load(contractAddress, privateFor);
         try {
             TransactionReceipt transactionReceipt = humanStandardToken
                     .approve(new Address(spender), new Uint256(value)).get();
-            return transactionReceipt.getTransactionHash();
+            return processApprovalEventResponse(humanStandardToken, transactionReceipt);
         } catch (InterruptedException | ExecutionException e) {
             throw new RuntimeException(e);
         }
@@ -82,19 +88,19 @@ public class ERC20Service {
     public long totalSupply(String contractAddress) {
         HumanStandardToken humanStandardToken = load(contractAddress);
         try {
-            return humanStandardToken.totalSupply().get().getValue().longValueExact();
+            return extractLongValue(humanStandardToken.totalSupply().get());
         } catch (InterruptedException | ExecutionException e) {
             throw new RuntimeException(e);
         }
     }
 
-    public String transferFrom(
+    public TransactionResponse<TransferEventResponse> transferFrom(
             List<String> privateFor, String contractAddress, String from, String to, long value) {
         HumanStandardToken humanStandardToken = load(contractAddress, privateFor);
         try {
             TransactionReceipt transactionReceipt = humanStandardToken
                     .transferFrom(new Address(from), new Address(to), new Uint256(value)).get();
-            return transactionReceipt.getTransactionHash();
+            return processTransferEventsResponse(humanStandardToken, transactionReceipt);
         } catch (InterruptedException | ExecutionException e) {
             throw new RuntimeException(e);
         }
@@ -103,7 +109,7 @@ public class ERC20Service {
     public long decimals(String contractAddress) {
         HumanStandardToken humanStandardToken = load(contractAddress);
         try {
-            return humanStandardToken.decimals().get().getValue().longValueExact();
+            return extractLongValue(humanStandardToken.decimals().get());
         } catch (InterruptedException | ExecutionException e) {
             throw new RuntimeException(e);
         }
@@ -112,7 +118,7 @@ public class ERC20Service {
     public String version(String contractAddress) {
         HumanStandardToken humanStandardToken = load(contractAddress);
         try {
-            return humanStandardToken.version().get().getValue();
+            return extractValue(humanStandardToken.version().get());
         } catch (InterruptedException | ExecutionException e) {
             throw new RuntimeException(e);
         }
@@ -121,8 +127,7 @@ public class ERC20Service {
     public long balanceOf(String contractAddress, String ownerAddress) {
         HumanStandardToken humanStandardToken = load(contractAddress);
         try {
-            return humanStandardToken.balanceOf(new Address(ownerAddress))
-                    .get().getValue().longValueExact();
+            return extractLongValue(humanStandardToken.balanceOf(new Address(ownerAddress)).get());
         } catch (InterruptedException | ExecutionException e) {
             throw new RuntimeException(e);
         }
@@ -131,25 +136,25 @@ public class ERC20Service {
     public String symbol(String contractAddress) {
         HumanStandardToken humanStandardToken = load(contractAddress);
         try {
-            return humanStandardToken.symbol().get().getValue();
+            return extractValue(humanStandardToken.symbol().get());
         } catch (InterruptedException | ExecutionException e) {
             throw new RuntimeException(e);
         }
     }
 
-    public String transfer(
+    public TransactionResponse<TransferEventResponse> transfer(
             List<String> privateFor, String contractAddress, String to, long value) {
         HumanStandardToken humanStandardToken = load(contractAddress, privateFor);
         try {
             TransactionReceipt transactionReceipt = humanStandardToken
                     .transfer(new Address(to), new Uint256(value)).get();
-            return transactionReceipt.getTransactionHash();
+            return processTransferEventsResponse(humanStandardToken, transactionReceipt);
         } catch (InterruptedException | ExecutionException e) {
             throw new RuntimeException(e);
         }
     }
 
-    public String approveAndCall(
+    public TransactionResponse<ApprovalEventResponse> approveAndCall(
             List<String> privateFor, String contractAddress, String spender, long value,
             String extraData) {
         HumanStandardToken humanStandardToken = load(contractAddress, privateFor);
@@ -159,7 +164,7 @@ public class ERC20Service {
                             new Address(spender), new Uint256(value),
                             new DynamicBytes(extraData.getBytes()))
                     .get();
-            return transactionReceipt.getTransactionHash();
+            return processApprovalEventResponse(humanStandardToken, transactionReceipt);
         } catch (InterruptedException | ExecutionException e) {
             throw new RuntimeException(e);
         }
@@ -168,9 +173,9 @@ public class ERC20Service {
     public long allowance(String contractAddress, String ownerAddress, String spenderAddress) {
         HumanStandardToken humanStandardToken = load(contractAddress);
         try {
-            return humanStandardToken.allowance(
+            return extractLongValue(humanStandardToken.allowance(
                     new Address(ownerAddress), new Address(spenderAddress))
-                    .get().getValue().longValueExact();
+                    .get());
         } catch (InterruptedException | ExecutionException e) {
             throw new RuntimeException(e);
         }
@@ -188,5 +193,85 @@ public class ERC20Service {
                 quorum, nodeConfiguration.getFromAddress(), Collections.emptyList());
         return HumanStandardToken.load(
                 contractAddress, quorum, transactionManager, GAS_PRICE, GAS_LIMIT);
+    }
+
+    private <T> T extractValue(Type<T> value) {
+        if (value != null) {
+            return value.getValue();
+        } else {
+            throw new RuntimeException("Null value returned by call");
+        }
+    }
+
+    private long extractLongValue(Uint value) {
+        return extractValue(value).longValueExact();
+    }
+
+    private TransactionResponse<ApprovalEventResponse>
+            processApprovalEventResponse(
+            HumanStandardToken humanStandardToken,
+            TransactionReceipt transactionReceipt) {
+
+        return processEventResponse(
+                humanStandardToken.getApprovalEvents(transactionReceipt),
+                transactionReceipt,
+                ApprovalEventResponse::new);
+    }
+
+    private TransactionResponse<TransferEventResponse>
+            processTransferEventsResponse(
+            HumanStandardToken humanStandardToken,
+            TransactionReceipt transactionReceipt) {
+
+        return processEventResponse(
+                humanStandardToken.getTransferEvents(transactionReceipt),
+                transactionReceipt,
+                TransferEventResponse::new);
+    }
+
+    private <T, R> TransactionResponse<R> processEventResponse(
+            List<T> eventResponses, TransactionReceipt transactionReceipt, Function<T, R> map) {
+        if (!eventResponses.isEmpty()) {
+            return new TransactionResponse<>(
+                    transactionReceipt.getTransactionHash(),
+                    map.apply(eventResponses.get(0)));
+        } else {
+            return new TransactionResponse<>(
+                    transactionReceipt.getTransactionHash());
+        }
+    }
+
+    @Getter
+    @Setter
+    public static class TransferEventResponse {
+        private String from;
+        private String to;
+        private long value;
+
+        public TransferEventResponse() { }
+
+        public TransferEventResponse(
+                HumanStandardToken.TransferEventResponse transferEventResponse) {
+            this.from = transferEventResponse._from.toString();
+            this.to = transferEventResponse._to.toString();
+            this.value = transferEventResponse._value.getValue().longValueExact();
+        }
+    }
+
+    @Getter
+    @Setter
+    public static class ApprovalEventResponse {
+        private String owner;
+        private String spender;
+        private long value;
+
+        public ApprovalEventResponse() { }
+
+        public ApprovalEventResponse(
+                HumanStandardToken.ApprovalEventResponse approvalEventResponse) {
+            this.owner = approvalEventResponse._owner.toString();
+            this.spender = approvalEventResponse._spender.toString();
+            this.value = approvalEventResponse._value.getValue().longValueExact();
+        }
     }
 }

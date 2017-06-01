@@ -6,6 +6,7 @@ RUN apk update && apk upgrade && \
 RUN mkdir -p /app/erc20-rest-service
 RUN git clone https://github.com/blk-io/erc20-rest-service.git
 
+# We exclude running tests as we need a Ethereum/Quorum network to be running
 RUN cd erc20-rest-service \
   && ./gradlew build -x test \
   && cp build/libs/erc20-rest-service-0.1.0.jar /app/erc20-rest-service

@@ -23,20 +23,20 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @Api("ERC-20 token standard API")
 @RestController
-public class ERC20Controller {
+public class Controller {
 
-    private final ERC20Service ERC20Service;
+    private final ContractService ContractService;
 
     @Autowired
-    public ERC20Controller(ERC20Service ERC20Service) {
-        this.ERC20Service = ERC20Service;
+    public Controller(ContractService ContractService) {
+        this.ContractService = ContractService;
     }
 
     @ApiOperation("Application configuration")
     @RequestMapping(value = "/config", method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     NodeConfiguration config() {
-        return ERC20Service.getConfig();
+        return ContractService.getConfig();
     }
 
     @ApiOperation(
@@ -52,7 +52,7 @@ public class ERC20Controller {
             HttpServletRequest request,
             @RequestBody ContractSpecification contractSpecification) {
 
-        return ERC20Service.deploy(
+        return ContractService.deploy(
                 extractPrivateFor(request),
                 contractSpecification.getInitialAmount(),
                 contractSpecification.getTokenName(),
@@ -63,23 +63,23 @@ public class ERC20Controller {
     @ApiOperation("Get token name")
     @RequestMapping(value = "/{contractAddress}/name", method = RequestMethod.GET)
     String name(@PathVariable String contractAddress) {
-        return ERC20Service.name(contractAddress);
+        return ContractService.name(contractAddress);
     }
 
     @ApiOperation(
             value = "Approve transfers by a specific address up to the provided total quantity",
-            notes = "Returns hex encoded transaction hash")
+            notes = "Returns hex encoded transaction hash, and Approval event if called")
     @ApiImplicitParam(name = "privateFor",
             value = "Comma separated list of public keys of enclave nodes that transaction is "
                     + "private for",
             paramType = "header",
             dataType = "string")
     @RequestMapping(value = "/{contractAddress}/approve", method = RequestMethod.POST)
-    String approve(
+    TransactionResponse<ContractService.ApprovalEventResponse> approve(
             HttpServletRequest request,
             @PathVariable String contractAddress,
             @RequestBody ApproveRequest approveRequest) {
-        return ERC20Service.approve(
+        return ContractService.approve(
                 extractPrivateFor(request),
                 contractAddress,
                 approveRequest.getSpender(),
@@ -89,23 +89,23 @@ public class ERC20Controller {
     @ApiOperation("Get total supply of tokens")
     @RequestMapping(value = "/{contractAddress}/totalSupply", method = RequestMethod.GET)
     long totalSupply(@PathVariable String contractAddress) {
-        return ERC20Service.totalSupply(contractAddress);
+        return ContractService.totalSupply(contractAddress);
     }
 
     @ApiOperation(
             value = "Transfer tokens between addresses (must already be approved)",
-            notes = "Returns hex encoded transaction hash")
+            notes = "Returns hex encoded transaction hash, and Transfer event if called")
     @ApiImplicitParam(name = "privateFor",
             value = "Comma separated list of public keys of enclave nodes that transaction is "
                     + "private for",
             paramType = "header",
             dataType = "string")
     @RequestMapping(value = "/{contractAddress}/transferFrom", method = RequestMethod.POST)
-    String transferFrom(
+    TransactionResponse<ContractService.TransferEventResponse> transferFrom(
             HttpServletRequest request,
             @PathVariable String contractAddress,
             @RequestBody TransferFromRequest transferFromRequest) {
-        return ERC20Service.transferFrom(
+        return ContractService.transferFrom(
                 extractPrivateFor(request),
                 contractAddress,
                 transferFromRequest.getFrom(),
@@ -116,43 +116,44 @@ public class ERC20Controller {
     @ApiOperation("Get decimal precision of tokens")
     @RequestMapping(value = "/{contractAddress}/decimals", method = RequestMethod.GET)
     long decimals(@PathVariable String contractAddress) {
-        return ERC20Service.decimals(contractAddress);
+        return ContractService.decimals(contractAddress);
     }
 
     @ApiOperation("Get contract version")
     @RequestMapping(value = "/{contractAddress}/version", method = RequestMethod.GET)
     String version(@PathVariable String contractAddress) {
-        return ERC20Service.version(contractAddress);
+        return ContractService.version(contractAddress);
     }
 
     @ApiOperation("Get token balance for address")
-    @RequestMapping(value = "/{contractAddress}/balanceOf/{ownerAddress}", method = RequestMethod.GET)
+    @RequestMapping(
+            value = "/{contractAddress}/balanceOf/{ownerAddress}", method = RequestMethod.GET)
     long balanceOf(
             @PathVariable String contractAddress,
             @PathVariable String ownerAddress) {
-        return ERC20Service.balanceOf(contractAddress, ownerAddress);
+        return ContractService.balanceOf(contractAddress, ownerAddress);
     }
 
     @ApiOperation("Get token symbol")
     @RequestMapping(value = "/{contractAddress}/symbol", method = RequestMethod.GET)
     String symbol(@PathVariable String contractAddress) {
-        return ERC20Service.symbol(contractAddress);
+        return ContractService.symbol(contractAddress);
     }
 
     @ApiOperation(
             value = "Transfer tokens you own to another address",
-            notes = "Returns hex encoded transaction hash")
+            notes = "Returns hex encoded transaction hash, and Transfer event if called")
     @ApiImplicitParam(name = "privateFor",
             value = "Comma separated list of public keys of enclave nodes that transaction is "
                     + "private for",
             paramType = "header",
             dataType = "string")
     @RequestMapping(value = "/{contractAddress}/transfer", method = RequestMethod.POST)
-    String transfer(
+    TransactionResponse<ContractService.TransferEventResponse> transfer(
             HttpServletRequest request,
             @PathVariable String contractAddress,
             @RequestBody TransferRequest transferRequest) {
-        return ERC20Service.transfer(
+        return ContractService.transfer(
                 extractPrivateFor(request),
                 contractAddress,
                 transferRequest.getTo(),
@@ -162,18 +163,18 @@ public class ERC20Controller {
     @ApiOperation(
             value = "Approve transfers by a specific contract address up to the provided total "
                     + "quantity, and notify that contract address of the approval",
-            notes = "Returns hex encoded transaction hash")
+            notes = "Returns hex encoded transaction hash, and Approval event if called")
     @ApiImplicitParam(name = "privateFor",
             value = "Comma separated list of public keys of enclave nodes that transaction is "
                     + "private for",
             paramType = "header",
             dataType = "string")
     @RequestMapping(value = "/{contractAddress}/approveAndCall", method = RequestMethod.POST)
-    String approveAndCall(
+    TransactionResponse<ContractService.ApprovalEventResponse> approveAndCall(
             HttpServletRequest request,
             @PathVariable String contractAddress,
             @RequestBody ApproveAndCallRequest approveAndCallRequest) {
-        return ERC20Service.approveAndCall(
+        return ContractService.approveAndCall(
                 extractPrivateFor(request),
                 contractAddress,
                 approveAndCallRequest.getSpender(),
@@ -187,7 +188,7 @@ public class ERC20Controller {
             @PathVariable String contractAddress,
             @RequestParam String ownerAddress,
             @RequestParam String spenderAddress) {
-        return ERC20Service.allowance(
+        return ContractService.allowance(
                 contractAddress, ownerAddress, spenderAddress);
     }
 

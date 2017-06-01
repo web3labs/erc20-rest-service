@@ -14,18 +14,21 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import static junit.framework.TestCase.assertNull;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = RANDOM_PORT)
-public class ERC20ControllerIT {
+public class ControllerIT {
 
     // key2
     private static final String OTHER_ACCOUNT = "ca843569e3427144cead5e4d5999a3d0ccf92b8e";
+    // Transaction manager 2
     private static final String PRIVATE_FOR = "QfeDAys9MPDs2XHExtc84jKGHxZg/aj52DTh0vtA3Xc=";
 
     @Autowired
@@ -38,14 +41,14 @@ public class ERC20ControllerIT {
     public void testConfig() {
         ResponseEntity<NodeConfiguration> responseEntity =
                 this.restTemplate.getForEntity("/config", NodeConfiguration.class);
-        verify(responseEntity);
+        verifyHttpStatus(responseEntity);
         assertNotNull(responseEntity.getBody());
     }
 
     @Test
     public void testLifeCycle() {
-        ERC20Controller.ContractSpecification contractSpecification =
-                new ERC20Controller.ContractSpecification(
+        Controller.ContractSpecification contractSpecification =
+                new Controller.ContractSpecification(
                         1_000_000L, "Quorum Token", 6, "QT");
 
         String contractAddress = deploy(contractSpecification);
@@ -59,17 +62,17 @@ public class ERC20ControllerIT {
         verifyBalanceOf(contractAddress,
                 nodeConfiguration.getFromAddress(), contractSpecification.getInitialAmount());
 
-        ERC20Controller.ApproveRequest approveRequest = new ERC20Controller.ApproveRequest(
+        Controller.ApproveRequest approveRequest = new Controller.ApproveRequest(
                 OTHER_ACCOUNT, 10_000);
-        verifyApprove(contractAddress, approveRequest);
+        verifyApproveTx(contractAddress, approveRequest);
 
         verifyAllowance(
                 contractAddress, nodeConfiguration.getFromAddress(), OTHER_ACCOUNT,
                 approveRequest.getValue());
 
-        ERC20Controller.TransferRequest transferRequest = new ERC20Controller.TransferRequest(
+        Controller.TransferRequest transferRequest = new Controller.TransferRequest(
                 OTHER_ACCOUNT, 10_000);
-        verifyTransfer(contractAddress, transferRequest);
+        verifyTransferTx(contractAddress, transferRequest);
         verifyBalanceOf(
                 contractAddress,
                 transferRequest.getTo(),
@@ -79,25 +82,25 @@ public class ERC20ControllerIT {
                 nodeConfiguration.getFromAddress(),
                 contractSpecification.getInitialAmount() - transferRequest.getValue());
 
-
-        // Needs to be performed by another account
-//        ERC20Controller.TransferFromRequest transferFromRequest =
-//                new ERC20Controller.TransferFromRequest(
-//                        nodeConfiguration.getFromAddress(), OTHER_ACCOUNT, 1000);
-//        verifyTransferFrom(contractAddress, transferFromRequest);
-//        verifyBalanceOf(
-//                contractAddress,
-//                transferFromRequest.getFrom(),
-//                contractSpecification.getInitialAmount() - transferFromRequest.getValue());
+        // Needs to be performed by another account, hence this will fail
+        Controller.TransferFromRequest transferFromRequest =
+                new Controller.TransferFromRequest(
+                        nodeConfiguration.getFromAddress(), OTHER_ACCOUNT, 1000);
+        verifyTransferFromTxFailure(contractAddress, transferFromRequest);
+        // Therefore our balance remains the same
+        verifyBalanceOf(
+                contractAddress,
+                transferFromRequest.getFrom(),
+                contractSpecification.getInitialAmount() - transferRequest.getValue());
     }
 
     private String deploy(
-            ERC20Controller.ContractSpecification contractSpecification) {
+            Controller.ContractSpecification contractSpecification) {
 
         ResponseEntity<String> responseEntity =
                 this.restTemplate.postForEntity(
                         "/deploy", buildEntity(contractSpecification), String.class);
-        verify(responseEntity);
+        verifyHttpStatus(responseEntity);
 
         String contractAddress = responseEntity.getBody();
         assertFalse(contractAddress.isEmpty());
@@ -108,7 +111,7 @@ public class ERC20ControllerIT {
         ResponseEntity<String> responseEntity =
                 this.restTemplate.getForEntity(
                         "/" + contractAddress + "" + "/name", String.class);
-        verify(responseEntity);
+        verifyHttpStatus(responseEntity);
         assertThat(responseEntity.getBody(), is(name));
     }
 
@@ -116,7 +119,7 @@ public class ERC20ControllerIT {
         ResponseEntity<Long> responseEntity =
                 this.restTemplate.getForEntity(
                         "/" + contractAddress + "" + "/totalSupply", long.class);
-        verify(responseEntity);
+        verifyHttpStatus(responseEntity);
         assertThat(responseEntity.getBody(), is(totalSupply));
     }
 
@@ -124,7 +127,7 @@ public class ERC20ControllerIT {
         ResponseEntity<Long> responseEntity =
                 this.restTemplate.getForEntity(
                         "/" + contractAddress + "" + "/decimals", long.class);
-        verify(responseEntity);
+        verifyHttpStatus(responseEntity);
         assertThat(responseEntity.getBody(), is(decimals));
     }
 
@@ -132,7 +135,7 @@ public class ERC20ControllerIT {
         ResponseEntity<String> responseEntity =
                 this.restTemplate.getForEntity(
                         "/" + contractAddress + "" + "/version", String.class);
-        verify(responseEntity);
+        verifyHttpStatus(responseEntity);
         assertThat(responseEntity.getBody(), is(version));
     }
 
@@ -141,7 +144,7 @@ public class ERC20ControllerIT {
                 this.restTemplate.getForEntity(
                         "/" + contractAddress + "" + "/balanceOf/" + ownerAddress,
                         long.class);
-        verify(responseEntity);
+        verifyHttpStatus(responseEntity);
         assertThat(responseEntity.getBody(), is(balance));
     }
 
@@ -149,7 +152,7 @@ public class ERC20ControllerIT {
         ResponseEntity<String> responseEntity =
                 this.restTemplate.getForEntity(
                         "/" + contractAddress + "" + "/symbol", String.class);
-        verify(responseEntity);
+        verifyHttpStatus(responseEntity);
         assertThat(responseEntity.getBody(), is(symbol));
     }
 
@@ -167,41 +170,38 @@ public class ERC20ControllerIT {
                         long.class,
                         ownerAddress,
                         spenderAddress);
-        verify(responseEntity);
+        verifyHttpStatus(responseEntity);
         assertThat(responseEntity.getBody(), is(expected));
     }
 
-    private void verifyTransferFrom(
-            String contractAddress, ERC20Controller.TransferFromRequest transferFromRequest) {
-        ResponseEntity<String> responseEntity =
+    private void verifyTransferFromTxFailure(
+            String contractAddress, Controller.TransferFromRequest transferFromRequest) {
+        ResponseEntity<TransactionResponse> responseEntity =
                 this.restTemplate.postForEntity(
                         "/" + contractAddress + "/transferFrom",
                         buildEntity(transferFromRequest),
-                        String.class);
-        verify(responseEntity);
-        assertNotNull(responseEntity.getBody());
+                        TransactionResponse.class);
+        verifyPostResponseFailure(responseEntity);
     }
 
-    private void verifyApprove(
-            String contractAddress, ERC20Controller.ApproveRequest approveRequest) {
-        ResponseEntity<String> responseEntity =
+    private void verifyApproveTx(
+            String contractAddress, Controller.ApproveRequest approveRequest) {
+        ResponseEntity<TransactionResponse> responseEntity =
                 this.restTemplate.postForEntity(
                         "/" + contractAddress + "/approve",
                         buildEntity(approveRequest),
-                        String.class);
-        verify(responseEntity);
-        assertNotNull(responseEntity.getBody());
+                        TransactionResponse.class);
+        verifyPostResponse(responseEntity);
     }
 
-    private void verifyTransfer(
-            String contractAddress, ERC20Controller.TransferRequest transferRequest) {
-        ResponseEntity<String> responseEntity =
+    private void verifyTransferTx(
+            String contractAddress, Controller.TransferRequest transferRequest) {
+        ResponseEntity<TransactionResponse> responseEntity =
                 this.restTemplate.postForEntity(
                         "/" + contractAddress + "/transfer",
                         buildEntity(transferRequest),
-                        String.class);
-        verify(responseEntity);
-        assertNotNull(responseEntity.getBody());
+                        TransactionResponse.class);
+        verifyPostResponse(responseEntity);
     }
 
     private <T> HttpEntity<T> buildEntity(T body) {
@@ -210,10 +210,29 @@ public class ERC20ControllerIT {
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.add("privateFor", PRIVATE_FOR);
 
-        return new HttpEntity<T>(body, headers);
+        return new HttpEntity<>(body, headers);
     }
 
-    private <T> void verify(ResponseEntity<T> responseEntity) {
+    private <T> void verifyHttpStatus(ResponseEntity<T> responseEntity) {
         assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
+    }
+
+    private void verifyPostResponse(ResponseEntity<TransactionResponse> responseEntity) {
+        verifyPostResponseBody(responseEntity);
+        assertNotNull(responseEntity.getBody().getEvent());
+    }
+
+    private void verifyPostResponseFailure(ResponseEntity<TransactionResponse> responseEntity) {
+        verifyHttpStatus(responseEntity);
+        assertNull(responseEntity.getBody().getEvent());
+    }
+
+    private void verifyPostResponseBody(ResponseEntity<TransactionResponse> responseEntity) {
+        verifyHttpStatus(responseEntity);
+        TransactionResponse body = responseEntity.getBody();
+        assertNotNull(body);
+        String transactionHash = body.getTransactionHash();
+        assertTrue(transactionHash.startsWith("0x"));
+        assertThat(transactionHash.length(), is(66));
     }
 }
