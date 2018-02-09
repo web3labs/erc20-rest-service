@@ -1,5 +1,6 @@
 package io.blk.erc20.generated;
 
+import java.io.IOException;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -21,6 +22,7 @@ import org.web3j.abi.datatypes.generated.Uint8;
 import org.web3j.crypto.Credentials;
 import org.web3j.protocol.Web3j;
 import org.web3j.protocol.core.DefaultBlockParameter;
+import org.web3j.protocol.core.RemoteCall;
 import org.web3j.protocol.core.methods.request.EthFilter;
 import org.web3j.protocol.core.methods.response.Log;
 import org.web3j.protocol.core.methods.response.TransactionReceipt;
@@ -48,7 +50,7 @@ public final class HumanStandardToken extends Contract {
     }
 
     public List<TransferEventResponse> getTransferEvents(TransactionReceipt transactionReceipt) {
-        final Event event = new Event("Transfer", 
+        final Event event = new Event("Transfer",
                 Arrays.<TypeReference<?>>asList(new TypeReference<Address>() {}, new TypeReference<Address>() {}),
                 Arrays.<TypeReference<?>>asList(new TypeReference<Uint256>() {}));
         List<EventValues> valueList = extractEventParameters(event, transactionReceipt);
@@ -64,7 +66,7 @@ public final class HumanStandardToken extends Contract {
     }
 
     public Observable<TransferEventResponse> transferEventObservable(DefaultBlockParameter startBlock, DefaultBlockParameter endBlock) {
-        final Event event = new Event("Transfer", 
+        final Event event = new Event("Transfer",
                 Arrays.<TypeReference<?>>asList(new TypeReference<Address>() {}, new TypeReference<Address>() {}),
                 Arrays.<TypeReference<?>>asList(new TypeReference<Uint256>() {}));
         EthFilter filter = new EthFilter(startBlock, endBlock, getContractAddress());
@@ -83,7 +85,7 @@ public final class HumanStandardToken extends Contract {
     }
 
     public List<ApprovalEventResponse> getApprovalEvents(TransactionReceipt transactionReceipt) {
-        final Event event = new Event("Approval", 
+        final Event event = new Event("Approval",
                 Arrays.<TypeReference<?>>asList(new TypeReference<Address>() {}, new TypeReference<Address>() {}),
                 Arrays.<TypeReference<?>>asList(new TypeReference<Uint256>() {}));
         List<EventValues> valueList = extractEventParameters(event, transactionReceipt);
@@ -99,7 +101,7 @@ public final class HumanStandardToken extends Contract {
     }
 
     public Observable<ApprovalEventResponse> approvalEventObservable(DefaultBlockParameter startBlock, DefaultBlockParameter endBlock) {
-        final Event event = new Event("Approval", 
+        final Event event = new Event("Approval",
                 Arrays.<TypeReference<?>>asList(new TypeReference<Address>() {}, new TypeReference<Address>() {}),
                 Arrays.<TypeReference<?>>asList(new TypeReference<Uint256>() {}));
         EthFilter filter = new EthFilter(startBlock, endBlock, getContractAddress());
@@ -117,83 +119,83 @@ public final class HumanStandardToken extends Contract {
         });
     }
 
-    public Future<Utf8String> name() {
-        Function function = new Function("name", 
-                Arrays.<Type>asList(), 
+    public Future<Utf8String> name() throws IOException {
+        Function function = new Function("name",
+                Arrays.<Type>asList(),
                 Arrays.<TypeReference<?>>asList(new TypeReference<Utf8String>() {}));
-        return executeCallSingleValueReturnAsync(function);
+        return executeCallSingleValueReturn(function);
     }
 
-    public Future<TransactionReceipt> approve(Address _spender, Uint256 _value) {
+    public RemoteCall<Type> approve(Address _spender, Uint256 _value) {
         Function function = new Function("approve", Arrays.<Type>asList(_spender, _value), Collections.<TypeReference<?>>emptyList());
-        return executeTransactionAsync(function);
+        return executeRemoteCallSingleValueReturn(function);
     }
 
-    public Future<Uint256> totalSupply() {
-        Function function = new Function("totalSupply", 
-                Arrays.<Type>asList(), 
+    public Future<Uint256> totalSupply() throws IOException {
+        Function function = new Function("totalSupply",
+                Arrays.<Type>asList(),
                 Arrays.<TypeReference<?>>asList(new TypeReference<Uint256>() {}));
-        return executeCallSingleValueReturnAsync(function);
+        return executeCallSingleValueReturn(function);
     }
 
-    public Future<TransactionReceipt> transferFrom(Address _from, Address _to, Uint256 _value) {
+    public RemoteCall<Type> transferFrom(Address _from, Address _to, Uint256 _value) {
         Function function = new Function("transferFrom", Arrays.<Type>asList(_from, _to, _value), Collections.<TypeReference<?>>emptyList());
-        return executeTransactionAsync(function);
+        return executeRemoteCallSingleValueReturn(function);
     }
 
-    public Future<Uint8> decimals() {
-        Function function = new Function("decimals", 
-                Arrays.<Type>asList(), 
+    public Future<Uint8> decimals() throws IOException {
+        Function function = new Function("decimals",
+                Arrays.<Type>asList(),
                 Arrays.<TypeReference<?>>asList(new TypeReference<Uint8>() {}));
-        return executeCallSingleValueReturnAsync(function);
+        return executeCallSingleValueReturn(function);
     }
 
-    public Future<Utf8String> version() {
-        Function function = new Function("version", 
-                Arrays.<Type>asList(), 
+    public Future<Utf8String> version() throws IOException {
+        Function function = new Function("version",
+                Arrays.<Type>asList(),
                 Arrays.<TypeReference<?>>asList(new TypeReference<Utf8String>() {}));
-        return executeCallSingleValueReturnAsync(function);
+        return executeCallSingleValueReturn(function);
     }
 
-    public Future<Uint256> balanceOf(Address _owner) {
-        Function function = new Function("balanceOf", 
-                Arrays.<Type>asList(_owner), 
+    public Future<Uint256> balanceOf(Address _owner) throws IOException {
+        Function function = new Function("balanceOf",
+                Arrays.<Type>asList(_owner),
                 Arrays.<TypeReference<?>>asList(new TypeReference<Uint256>() {}));
-        return executeCallSingleValueReturnAsync(function);
+        return executeCallSingleValueReturn(function);
     }
 
-    public Future<Utf8String> symbol() {
-        Function function = new Function("symbol", 
-                Arrays.<Type>asList(), 
+    public Future<Utf8String> symbol() throws IOException {
+        Function function = new Function("symbol",
+                Arrays.<Type>asList(),
                 Arrays.<TypeReference<?>>asList(new TypeReference<Utf8String>() {}));
-        return executeCallSingleValueReturnAsync(function);
+        return executeCallSingleValueReturn(function);
     }
 
-    public Future<TransactionReceipt> transfer(Address _to, Uint256 _value) {
+    public RemoteCall<Type> transfer(Address _to, Uint256 _value) {
         Function function = new Function("transfer", Arrays.<Type>asList(_to, _value), Collections.<TypeReference<?>>emptyList());
-        return executeTransactionAsync(function);
+        return executeRemoteCallSingleValueReturn(function);
     }
 
-    public Future<TransactionReceipt> approveAndCall(Address _spender, Uint256 _value, DynamicBytes _extraData) {
+    public RemoteCall<Type> approveAndCall(Address _spender, Uint256 _value, DynamicBytes _extraData) {
         Function function = new Function("approveAndCall", Arrays.<Type>asList(_spender, _value, _extraData), Collections.<TypeReference<?>>emptyList());
-        return executeTransactionAsync(function);
+        return executeRemoteCallSingleValueReturn(function);
     }
 
-    public Future<Uint256> allowance(Address _owner, Address _spender) {
-        Function function = new Function("allowance", 
-                Arrays.<Type>asList(_owner, _spender), 
+    public Future<Uint256> allowance(Address _owner, Address _spender) throws IOException {
+        Function function = new Function("allowance",
+                Arrays.<Type>asList(_owner, _spender),
                 Arrays.<TypeReference<?>>asList(new TypeReference<Uint256>() {}));
-        return executeCallSingleValueReturnAsync(function);
+        return executeCallSingleValueReturn(function);
     }
 
-    public static Future<HumanStandardToken> deploy(Web3j web3j, Credentials credentials, BigInteger gasPrice, BigInteger gasLimit, BigInteger initialWeiValue, Uint256 _initialAmount, Utf8String _tokenName, Uint8 _decimalUnits, Utf8String _tokenSymbol) {
+    public static RemoteCall<HumanStandardToken> deploy(Web3j web3j, Credentials credentials, BigInteger gasPrice, BigInteger gasLimit, BigInteger initialWeiValue, Uint256 _initialAmount, Utf8String _tokenName, Uint8 _decimalUnits, Utf8String _tokenSymbol) {
         String encodedConstructor = FunctionEncoder.encodeConstructor(Arrays.<Type>asList(_initialAmount, _tokenName, _decimalUnits, _tokenSymbol));
-        return deployAsync(HumanStandardToken.class, web3j, credentials, gasPrice, gasLimit, BINARY, encodedConstructor, initialWeiValue);
+        return deployRemoteCall(HumanStandardToken.class, web3j, credentials, gasPrice, gasLimit, BINARY, encodedConstructor, initialWeiValue);
     }
 
-    public static Future<HumanStandardToken> deploy(Web3j web3j, TransactionManager transactionManager, BigInteger gasPrice, BigInteger gasLimit, BigInteger initialWeiValue, Uint256 _initialAmount, Utf8String _tokenName, Uint8 _decimalUnits, Utf8String _tokenSymbol) {
+    public static RemoteCall<HumanStandardToken> deploy(Web3j web3j, TransactionManager transactionManager, BigInteger gasPrice, BigInteger gasLimit, BigInteger initialWeiValue, Uint256 _initialAmount, Utf8String _tokenName, Uint8 _decimalUnits, Utf8String _tokenSymbol) {
         String encodedConstructor = FunctionEncoder.encodeConstructor(Arrays.<Type>asList(_initialAmount, _tokenName, _decimalUnits, _tokenSymbol));
-        return deployAsync(HumanStandardToken.class, web3j, transactionManager, gasPrice, gasLimit, BINARY, encodedConstructor, initialWeiValue);
+        return deployRemoteCall(HumanStandardToken.class, web3j, transactionManager, gasPrice, gasLimit, BINARY, encodedConstructor, initialWeiValue);
     }
 
     public static HumanStandardToken load(String contractAddress, Web3j web3j, Credentials credentials, BigInteger gasPrice, BigInteger gasLimit) {

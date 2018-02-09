@@ -1,5 +1,6 @@
 package io.blk.erc20;
 
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -50,7 +51,7 @@ public class Controller {
     @RequestMapping(value = "/deploy", method = RequestMethod.POST)
     String deploy(
             HttpServletRequest request,
-            @RequestBody ContractSpecification contractSpecification) {
+            @RequestBody ContractSpecification contractSpecification) throws Exception {
 
         return ContractService.deploy(
                 extractPrivateFor(request),
@@ -62,7 +63,7 @@ public class Controller {
 
     @ApiOperation("Get token name")
     @RequestMapping(value = "/{contractAddress}/name", method = RequestMethod.GET)
-    String name(@PathVariable String contractAddress) {
+    String name(@PathVariable String contractAddress) throws IOException {
         return ContractService.name(contractAddress);
     }
 
@@ -78,7 +79,7 @@ public class Controller {
     TransactionResponse<ContractService.ApprovalEventResponse> approve(
             HttpServletRequest request,
             @PathVariable String contractAddress,
-            @RequestBody ApproveRequest approveRequest) {
+            @RequestBody ApproveRequest approveRequest) throws Exception {
         return ContractService.approve(
                 extractPrivateFor(request),
                 contractAddress,
@@ -88,7 +89,7 @@ public class Controller {
 
     @ApiOperation("Get total supply of tokens")
     @RequestMapping(value = "/{contractAddress}/totalSupply", method = RequestMethod.GET)
-    long totalSupply(@PathVariable String contractAddress) {
+    long totalSupply(@PathVariable String contractAddress) throws IOException {
         return ContractService.totalSupply(contractAddress);
     }
 
@@ -104,7 +105,7 @@ public class Controller {
     TransactionResponse<ContractService.TransferEventResponse> transferFrom(
             HttpServletRequest request,
             @PathVariable String contractAddress,
-            @RequestBody TransferFromRequest transferFromRequest) {
+            @RequestBody TransferFromRequest transferFromRequest) throws Exception {
         return ContractService.transferFrom(
                 extractPrivateFor(request),
                 contractAddress,
@@ -115,13 +116,13 @@ public class Controller {
 
     @ApiOperation("Get decimal precision of tokens")
     @RequestMapping(value = "/{contractAddress}/decimals", method = RequestMethod.GET)
-    long decimals(@PathVariable String contractAddress) {
+    long decimals(@PathVariable String contractAddress) throws IOException {
         return ContractService.decimals(contractAddress);
     }
 
     @ApiOperation("Get contract version")
     @RequestMapping(value = "/{contractAddress}/version", method = RequestMethod.GET)
-    String version(@PathVariable String contractAddress) {
+    String version(@PathVariable String contractAddress) throws IOException {
         return ContractService.version(contractAddress);
     }
 
@@ -130,13 +131,13 @@ public class Controller {
             value = "/{contractAddress}/balanceOf/{ownerAddress}", method = RequestMethod.GET)
     long balanceOf(
             @PathVariable String contractAddress,
-            @PathVariable String ownerAddress) {
+            @PathVariable String ownerAddress) throws IOException {
         return ContractService.balanceOf(contractAddress, ownerAddress);
     }
 
     @ApiOperation("Get token symbol")
     @RequestMapping(value = "/{contractAddress}/symbol", method = RequestMethod.GET)
-    String symbol(@PathVariable String contractAddress) {
+    String symbol(@PathVariable String contractAddress) throws IOException {
         return ContractService.symbol(contractAddress);
     }
 
@@ -152,7 +153,7 @@ public class Controller {
     TransactionResponse<ContractService.TransferEventResponse> transfer(
             HttpServletRequest request,
             @PathVariable String contractAddress,
-            @RequestBody TransferRequest transferRequest) {
+            @RequestBody TransferRequest transferRequest) throws Exception {
         return ContractService.transfer(
                 extractPrivateFor(request),
                 contractAddress,
@@ -173,7 +174,7 @@ public class Controller {
     TransactionResponse<ContractService.ApprovalEventResponse> approveAndCall(
             HttpServletRequest request,
             @PathVariable String contractAddress,
-            @RequestBody ApproveAndCallRequest approveAndCallRequest) {
+            @RequestBody ApproveAndCallRequest approveAndCallRequest) throws Exception {
         return ContractService.approveAndCall(
                 extractPrivateFor(request),
                 contractAddress,
@@ -187,7 +188,7 @@ public class Controller {
     long allowance(
             @PathVariable String contractAddress,
             @RequestParam String ownerAddress,
-            @RequestParam String spenderAddress) {
+            @RequestParam String spenderAddress) throws IOException {
         return ContractService.allowance(
                 contractAddress, ownerAddress, spenderAddress);
     }

@@ -3,6 +3,7 @@ plugins {
 }
 
 apply plugin: 'java'
+'idea'
 
 sourceCompatibility = 1.8
 
@@ -18,7 +19,8 @@ dependencies {
             'io.springfox:springfox-swagger2:2.7.0',
             'io.springfox:springfox-swagger-ui:2.7.0',
             'org.projectlombok:lombok:1.16.16',
-            'org.web3j:quorum:0.4.3'
+            'org.web3j:quorum:0.8.0',
+            'org.springframework.boot:spring-boot-configuration-processor'
     testCompile 'junit:junit:4.12',
             'org.springframework.boot:spring-boot-starter-test:1.5.3.RELEASE'
 }

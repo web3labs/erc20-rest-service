@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+    <!-- Prevent Spring trying to log to /tmp/spring.log on Linux hosts. This needs to be before
+    the defaults include -->
+    <property name="LOG_TEMP" value="./logs" />
+    <include resource="org/springframework/boot/logging/logback/base.xml" />
+    <logger name="org.web3j" level="debug" />
+    <logger name="org.apache.http.wire" level="debug" />
+    <root level="INFO" />
+</configuration>

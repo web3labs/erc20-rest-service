@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+    <!-- Prevent Spring trying to log to /tmp/spring.log on Linux hosts. This needs to be before
+    the defaults include -->
+    <property name="LOG_TEMP" value="./logs" />
+    <include resource="org/springframework/boot/logging/logback/defaults.xml"/>
+    <property name="LOG_FILE" value="${LOG_FILE:-${LOG_PATH:-${LOG_TEMP:-${java.io.tmpdir:-/tmp}}/}spring.log}"/>
+    <!-- Uncomment here and below to allow console logging too -->
+    <!--<include resource="org/springframework/boot/logging/logback/console-appender.xml"/>-->
+
+    <appender name="ROLLING-FILE"
+              class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <encoder>
+            <pattern>${FILE_LOG_PATTERN}</pattern>
+        </encoder>
+        <file>${LOG_FILE}</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <!-- daily rollover -->
+            <fileNamePattern>${LOG_FILE}.%d{yyyy-MM-dd}.log</fileNamePattern>
+        </rollingPolicy>
+    </appender>
+
+    <logger name="org.web3j" level="debug" />
+    <logger name="org.apache.http.wire" level="debug" />
+
+    <root level="INFO">
+        <!--<appender-ref ref="CONSOLE"/>-->
+        <appender-ref ref="ROLLING-FILE"/>
+    </root>
+</configuration>
