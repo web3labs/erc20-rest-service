@@ -1,5 +1,6 @@
 package io.blk.erc20;
 
+import java.math.BigInteger;
 import java.util.Arrays;
 
 import org.junit.Test;
@@ -49,7 +50,7 @@ public class ControllerIT {
     public void testLifeCycle() {
         Controller.ContractSpecification contractSpecification =
                 new Controller.ContractSpecification(
-                        1_000_000L, "Quorum Token", 6, "QT");
+                        BigInteger.valueOf(1000000), "Quorum Token", BigInteger.valueOf(6), "QT");
 
         String contractAddress = deploy(contractSpecification);
 
@@ -63,7 +64,7 @@ public class ControllerIT {
                 nodeConfiguration.getFromAddress(), contractSpecification.getInitialAmount());
 
         Controller.ApproveRequest approveRequest = new Controller.ApproveRequest(
-                OTHER_ACCOUNT, 10_000);
+                OTHER_ACCOUNT, BigInteger.valueOf(10000));
         verifyApproveTx(contractAddress, approveRequest);
 
         verifyAllowance(
@@ -71,7 +72,7 @@ public class ControllerIT {
                 approveRequest.getValue());
 
         Controller.TransferRequest transferRequest = new Controller.TransferRequest(
-                OTHER_ACCOUNT, 10_000);
+                OTHER_ACCOUNT, BigInteger.valueOf(10000));
         verifyTransferTx(contractAddress, transferRequest);
         verifyBalanceOf(
                 contractAddress,
@@ -80,18 +81,18 @@ public class ControllerIT {
         verifyBalanceOf(
                 contractAddress,
                 nodeConfiguration.getFromAddress(),
-                contractSpecification.getInitialAmount() - transferRequest.getValue());
+                contractSpecification.getInitialAmount().subtract(transferRequest.getValue()));
 
         // Needs to be performed by another account, hence this will fail
         Controller.TransferFromRequest transferFromRequest =
                 new Controller.TransferFromRequest(
-                        nodeConfiguration.getFromAddress(), OTHER_ACCOUNT, 1000);
+                        nodeConfiguration.getFromAddress(), OTHER_ACCOUNT, BigInteger.valueOf(1000));
         verifyTransferFromTxFailure(contractAddress, transferFromRequest);
         // Therefore our balance remains the same
         verifyBalanceOf(
                 contractAddress,
                 transferFromRequest.getFrom(),
-                contractSpecification.getInitialAmount() - transferRequest.getValue());
+                contractSpecification.getInitialAmount().subtract(transferRequest.getValue()));
     }
 
     private String deploy(
@@ -115,18 +116,18 @@ public class ControllerIT {
         assertThat(responseEntity.getBody(), is(name));
     }
 
-    private void verifyTotalSupply(String contractAddress, long totalSupply) {
-        ResponseEntity<Long> responseEntity =
+    private void verifyTotalSupply(String contractAddress, BigInteger totalSupply) {
+        ResponseEntity<BigInteger> responseEntity =
                 this.restTemplate.getForEntity(
-                        "/" + contractAddress + "" + "/totalSupply", long.class);
+                        "/" + contractAddress + "" + "/totalSupply", BigInteger.class);
         verifyHttpStatus(responseEntity);
         assertThat(responseEntity.getBody(), is(totalSupply));
     }
 
-    private void verifyDecimals(String contractAddress, long decimals) {
-        ResponseEntity<Long> responseEntity =
+    private void verifyDecimals(String contractAddress, BigInteger decimals) {
+        ResponseEntity<BigInteger> responseEntity =
                 this.restTemplate.getForEntity(
-                        "/" + contractAddress + "" + "/decimals", long.class);
+                        "/" + contractAddress + "" + "/decimals", BigInteger.class);
         verifyHttpStatus(responseEntity);
         assertThat(responseEntity.getBody(), is(decimals));
     }
@@ -139,11 +140,11 @@ public class ControllerIT {
         assertThat(responseEntity.getBody(), is(version));
     }
 
-    private void verifyBalanceOf(String contractAddress, String ownerAddress, long balance) {
-        ResponseEntity<Long> responseEntity =
+    private void verifyBalanceOf(String contractAddress, String ownerAddress, BigInteger balance) {
+        ResponseEntity<BigInteger> responseEntity =
                 this.restTemplate.getForEntity(
                         "/" + contractAddress + "" + "/balanceOf/" + ownerAddress,
-                        long.class);
+                        BigInteger.class);
         verifyHttpStatus(responseEntity);
         assertThat(responseEntity.getBody(), is(balance));
     }
@@ -160,14 +161,14 @@ public class ControllerIT {
             String contractAddress,
             String ownerAddress,
             String spenderAddress,
-            long expected) {
-        ResponseEntity<Long> responseEntity =
+            BigInteger expected) {
+        ResponseEntity<BigInteger> responseEntity =
                 this.restTemplate.getForEntity(
                         "/" + contractAddress
                                 + "/allowance?"
                                 + "ownerAddress={ownerAddress}"
                                 + "&spenderAddress={spenderAddress}",
-                        long.class,
+                        BigInteger.class,
                         ownerAddress,
                         spenderAddress);
         verifyHttpStatus(responseEntity);

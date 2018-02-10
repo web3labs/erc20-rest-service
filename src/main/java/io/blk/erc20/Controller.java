@@ -1,6 +1,6 @@
 package io.blk.erc20;
 
-import java.io.IOException;
+import java.math.BigInteger;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -63,7 +63,7 @@ public class Controller {
 
     @ApiOperation("Get token name")
     @RequestMapping(value = "/{contractAddress}/name", method = RequestMethod.GET)
-    String name(@PathVariable String contractAddress) throws IOException {
+    String name(@PathVariable String contractAddress) throws Exception {
         return ContractService.name(contractAddress);
     }
 
@@ -89,7 +89,7 @@ public class Controller {
 
     @ApiOperation("Get total supply of tokens")
     @RequestMapping(value = "/{contractAddress}/totalSupply", method = RequestMethod.GET)
-    long totalSupply(@PathVariable String contractAddress) throws IOException {
+    long totalSupply(@PathVariable String contractAddress) throws Exception {
         return ContractService.totalSupply(contractAddress);
     }
 
@@ -116,13 +116,13 @@ public class Controller {
 
     @ApiOperation("Get decimal precision of tokens")
     @RequestMapping(value = "/{contractAddress}/decimals", method = RequestMethod.GET)
-    long decimals(@PathVariable String contractAddress) throws IOException {
+    long decimals(@PathVariable String contractAddress) throws Exception {
         return ContractService.decimals(contractAddress);
     }
 
     @ApiOperation("Get contract version")
     @RequestMapping(value = "/{contractAddress}/version", method = RequestMethod.GET)
-    String version(@PathVariable String contractAddress) throws IOException {
+    String version(@PathVariable String contractAddress) throws Exception {
         return ContractService.version(contractAddress);
     }
 
@@ -131,13 +131,13 @@ public class Controller {
             value = "/{contractAddress}/balanceOf/{ownerAddress}", method = RequestMethod.GET)
     long balanceOf(
             @PathVariable String contractAddress,
-            @PathVariable String ownerAddress) throws IOException {
+            @PathVariable String ownerAddress) throws Exception {
         return ContractService.balanceOf(contractAddress, ownerAddress);
     }
 
     @ApiOperation("Get token symbol")
     @RequestMapping(value = "/{contractAddress}/symbol", method = RequestMethod.GET)
-    String symbol(@PathVariable String contractAddress) throws IOException {
+    String symbol(@PathVariable String contractAddress) throws Exception {
         return ContractService.symbol(contractAddress);
     }
 
@@ -188,7 +188,7 @@ public class Controller {
     long allowance(
             @PathVariable String contractAddress,
             @RequestParam String ownerAddress,
-            @RequestParam String spenderAddress) throws IOException {
+            @RequestParam String spenderAddress) throws Exception {
         return ContractService.allowance(
                 contractAddress, ownerAddress, spenderAddress);
     }
@@ -204,35 +204,35 @@ public class Controller {
 
     @Data
     static class ContractSpecification {
-        private final long initialAmount;
+        private final BigInteger initialAmount;
         private final String tokenName;
-        private final long decimalUnits;
+        private final BigInteger decimalUnits;
         private final String tokenSymbol;
     }
 
     @Data
     static class ApproveRequest {
         private final String spender;
-        private final long value;
+        private final BigInteger value;
     }
 
     @Data
     static class TransferFromRequest {
         private final String from;
         private final String to;
-        private final long value;
+        private final BigInteger value;
     }
 
     @Data
     static class TransferRequest {
         private final String to;
-        private final long value;
+        private final BigInteger value;
     }
 
     @Data
     static class ApproveAndCallRequest {
         private final String spender;
-        private final long value;
+        private final BigInteger value;
         private final String extraData;
     }
 
