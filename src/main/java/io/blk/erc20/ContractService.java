@@ -60,7 +60,7 @@ public class ContractService {
     public String name(String contractAddress) throws Exception {
         HumanStandardToken humanStandardToken = load(contractAddress);
         try {
-            return extractValue(humanStandardToken.name().send());
+            return humanStandardToken.name().send();
         } catch (InterruptedException | ExecutionException e) {
             throw new RuntimeException(e);
         }
@@ -111,7 +111,7 @@ public class ContractService {
     public String version(String contractAddress) throws Exception {
         HumanStandardToken humanStandardToken = load(contractAddress);
         try {
-            return extractValue(humanStandardToken.version().send());
+            return humanStandardToken.version().send();
         } catch (InterruptedException | ExecutionException e) {
             throw new RuntimeException(e);
         }
@@ -129,7 +129,7 @@ public class ContractService {
     public String symbol(String contractAddress) throws Exception {
         HumanStandardToken humanStandardToken = load(contractAddress);
         try {
-            return extractValue(humanStandardToken.symbol().send());
+            return humanStandardToken.symbol().send();
         } catch (InterruptedException | ExecutionException e) {
             throw new RuntimeException(e);
         }
@@ -188,16 +188,8 @@ public class ContractService {
                 contractAddress, quorum, transactionManager, GAS_PRICE, GAS_LIMIT);
     }
 
-    private <T> T extractValue(T value) {
-        if (value != null) {
-            return value;
-        } else {
-            throw new RuntimeException("Empty value returned by call");
-        }
-    }
-
     private long extractLongValue(BigInteger value) {
-        return extractValue(value).longValueExact();
+        return value.longValueExact();
     }
 
     private TransactionResponse<ApprovalEventResponse>
