@@ -6,18 +6,11 @@ import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.function.Function;
 
+import io.blk.erc20.generated.HumanStandardToken;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import org.web3j.abi.datatypes.Address;
-import org.web3j.abi.datatypes.DynamicBytes;
-import org.web3j.abi.datatypes.Type;
-import org.web3j.abi.datatypes.Uint;
-import org.web3j.abi.datatypes.Utf8String;
-import org.web3j.abi.datatypes.generated.Uint256;
-import org.web3j.abi.datatypes.generated.Uint8;
-import io.blk.erc20.generated.HumanStandardToken;
 import org.springframework.stereotype.Service;
 
 import org.web3j.protocol.core.methods.response.TransactionReceipt;
@@ -49,105 +42,105 @@ public class ContractService {
     }
 
     public String deploy(
-            List<String> privateFor, long initialAmount, String tokenName, long decimalUnits,
-            String tokenSymbol) {
+            List<String> privateFor, BigInteger initialAmount, String tokenName, BigInteger decimalUnits,
+            String tokenSymbol) throws Exception {
         try {
             TransactionManager transactionManager = new ClientTransactionManager(
                     quorum, nodeConfiguration.getFromAddress(), privateFor);
             HumanStandardToken humanStandardToken = HumanStandardToken.deploy(
-                    quorum, transactionManager, GAS_PRICE, GAS_LIMIT, BigInteger.ZERO,
-                    new Uint256(initialAmount), new Utf8String(tokenName), new Uint8(decimalUnits),
-                    new Utf8String(tokenSymbol)).get();
+                    quorum, transactionManager, GAS_PRICE, GAS_LIMIT,
+                    initialAmount, tokenName, decimalUnits,
+                    tokenSymbol).send();
             return humanStandardToken.getContractAddress();
         } catch (InterruptedException | ExecutionException e) {
             throw new RuntimeException(e);
         }
     }
 
-    public String name(String contractAddress) {
+    public String name(String contractAddress) throws Exception {
         HumanStandardToken humanStandardToken = load(contractAddress);
         try {
-            return extractValue(humanStandardToken.name().get());
+            return humanStandardToken.name().send();
         } catch (InterruptedException | ExecutionException e) {
             throw new RuntimeException(e);
         }
     }
 
     public TransactionResponse<ApprovalEventResponse> approve(
-            List<String> privateFor, String contractAddress, String spender, long value) {
+            List<String> privateFor, String contractAddress, String spender, BigInteger value) throws Exception {
         HumanStandardToken humanStandardToken = load(contractAddress, privateFor);
         try {
             TransactionReceipt transactionReceipt = humanStandardToken
-                    .approve(new Address(spender), new Uint256(value)).get();
+                    .approve(spender, value).send();
             return processApprovalEventResponse(humanStandardToken, transactionReceipt);
         } catch (InterruptedException | ExecutionException e) {
             throw new RuntimeException(e);
         }
     }
 
-    public long totalSupply(String contractAddress) {
+    public long totalSupply(String contractAddress) throws Exception {
         HumanStandardToken humanStandardToken = load(contractAddress);
         try {
-            return extractLongValue(humanStandardToken.totalSupply().get());
+            return extractLongValue(humanStandardToken.totalSupply().send());
         } catch (InterruptedException | ExecutionException e) {
             throw new RuntimeException(e);
         }
     }
 
     public TransactionResponse<TransferEventResponse> transferFrom(
-            List<String> privateFor, String contractAddress, String from, String to, long value) {
+            List<String> privateFor, String contractAddress, String from, String to, BigInteger value) throws Exception {
         HumanStandardToken humanStandardToken = load(contractAddress, privateFor);
         try {
             TransactionReceipt transactionReceipt = humanStandardToken
-                    .transferFrom(new Address(from), new Address(to), new Uint256(value)).get();
+                    .transferFrom(from, to, value).send();
             return processTransferEventsResponse(humanStandardToken, transactionReceipt);
         } catch (InterruptedException | ExecutionException e) {
             throw new RuntimeException(e);
         }
     }
 
-    public long decimals(String contractAddress) {
+    public long decimals(String contractAddress) throws Exception {
         HumanStandardToken humanStandardToken = load(contractAddress);
         try {
-            return extractLongValue(humanStandardToken.decimals().get());
+            return extractLongValue(humanStandardToken.decimals().send());
         } catch (InterruptedException | ExecutionException e) {
             throw new RuntimeException(e);
         }
     }
 
-    public String version(String contractAddress) {
+    public String version(String contractAddress) throws Exception {
         HumanStandardToken humanStandardToken = load(contractAddress);
         try {
-            return extractValue(humanStandardToken.version().get());
+            return humanStandardToken.version().send();
         } catch (InterruptedException | ExecutionException e) {
             throw new RuntimeException(e);
         }
     }
 
-    public long balanceOf(String contractAddress, String ownerAddress) {
+    public long balanceOf(String contractAddress, String ownerAddress) throws Exception {
         HumanStandardToken humanStandardToken = load(contractAddress);
         try {
-            return extractLongValue(humanStandardToken.balanceOf(new Address(ownerAddress)).get());
+            return extractLongValue(humanStandardToken.balanceOf(ownerAddress).send());
         } catch (InterruptedException | ExecutionException e) {
             throw new RuntimeException(e);
         }
     }
 
-    public String symbol(String contractAddress) {
+    public String symbol(String contractAddress) throws Exception {
         HumanStandardToken humanStandardToken = load(contractAddress);
         try {
-            return extractValue(humanStandardToken.symbol().get());
+            return humanStandardToken.symbol().send();
         } catch (InterruptedException | ExecutionException e) {
             throw new RuntimeException(e);
         }
     }
 
     public TransactionResponse<TransferEventResponse> transfer(
-            List<String> privateFor, String contractAddress, String to, long value) {
+            List<String> privateFor, String contractAddress, String to, BigInteger value) throws Exception {
         HumanStandardToken humanStandardToken = load(contractAddress, privateFor);
         try {
             TransactionReceipt transactionReceipt = humanStandardToken
-                    .transfer(new Address(to), new Uint256(value)).get();
+                    .transfer(to, value).send();
             return processTransferEventsResponse(humanStandardToken, transactionReceipt);
         } catch (InterruptedException | ExecutionException e) {
             throw new RuntimeException(e);
@@ -155,27 +148,27 @@ public class ContractService {
     }
 
     public TransactionResponse<ApprovalEventResponse> approveAndCall(
-            List<String> privateFor, String contractAddress, String spender, long value,
-            String extraData) {
+            List<String> privateFor, String contractAddress, String spender, BigInteger value,
+            String extraData) throws Exception {
         HumanStandardToken humanStandardToken = load(contractAddress, privateFor);
         try {
             TransactionReceipt transactionReceipt = humanStandardToken
                     .approveAndCall(
-                            new Address(spender), new Uint256(value),
-                            new DynamicBytes(extraData.getBytes()))
-                    .get();
+                            spender, value,
+                            extraData.getBytes())
+                    .send();
             return processApprovalEventResponse(humanStandardToken, transactionReceipt);
         } catch (InterruptedException | ExecutionException e) {
             throw new RuntimeException(e);
         }
     }
 
-    public long allowance(String contractAddress, String ownerAddress, String spenderAddress) {
+    public long allowance(String contractAddress, String ownerAddress, String spenderAddress) throws Exception {
         HumanStandardToken humanStandardToken = load(contractAddress);
         try {
             return extractLongValue(humanStandardToken.allowance(
-                    new Address(ownerAddress), new Address(spenderAddress))
-                    .get());
+                    ownerAddress, spenderAddress)
+                    .send());
         } catch (InterruptedException | ExecutionException e) {
             throw new RuntimeException(e);
         }
@@ -195,16 +188,8 @@ public class ContractService {
                 contractAddress, quorum, transactionManager, GAS_PRICE, GAS_LIMIT);
     }
 
-    private <T> T extractValue(Type<T> value) {
-        if (value != null) {
-            return value.getValue();
-        } else {
-            throw new RuntimeException("Empty value returned by call");
-        }
-    }
-
-    private long extractLongValue(Uint value) {
-        return extractValue(value).longValueExact();
+    private long extractLongValue(BigInteger value) {
+        return value.longValueExact();
     }
 
     private TransactionResponse<ApprovalEventResponse>
@@ -252,9 +237,9 @@ public class ContractService {
 
         public TransferEventResponse(
                 HumanStandardToken.TransferEventResponse transferEventResponse) {
-            this.from = transferEventResponse._from.toString();
-            this.to = transferEventResponse._to.toString();
-            this.value = transferEventResponse._value.getValue().longValueExact();
+            this.from = transferEventResponse._from;
+            this.to = transferEventResponse._to;
+            this.value = transferEventResponse._value.longValueExact();
         }
     }
 
@@ -269,9 +254,9 @@ public class ContractService {
 
         public ApprovalEventResponse(
                 HumanStandardToken.ApprovalEventResponse approvalEventResponse) {
-            this.owner = approvalEventResponse._owner.toString();
-            this.spender = approvalEventResponse._spender.toString();
-            this.value = approvalEventResponse._value.getValue().longValueExact();
+            this.owner = approvalEventResponse._owner;
+            this.spender = approvalEventResponse._spender;
+            this.value = approvalEventResponse._value.longValueExact();
         }
     }
 }

@@ -5,5 +5,5 @@ cd src/main/resources/solidity/contract/ && \
     web3j solidity generate \
         build/HumanStandardToken.bin \
         build/HumanStandardToken.abi \
-        -p org.web3j.erc20.generated \
+        -p io.blk.erc20.generated \
         -o ../../../java/

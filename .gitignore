@@ -38,3 +38,4 @@ gradle-app.setting
 # log files
 *.log
 logs
+/out
