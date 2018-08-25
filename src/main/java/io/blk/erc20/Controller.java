@@ -158,7 +158,8 @@ public class Controller {
                 extractPrivateFor(request),
                 contractAddress,
                 transferRequest.getTo(),
-                transferRequest.getValue());
+                transferRequest.getValue(),
+                transferRequest.getFrom());
     }
 
     @ApiOperation(
@@ -227,6 +228,7 @@ public class Controller {
     static class TransferRequest {
         private final String to;
         private final BigInteger value;
+        private final String from;
     }
 
     @Data
