@@ -84,7 +84,8 @@ public class Controller {
                 extractPrivateFor(request),
                 contractAddress,
                 approveRequest.getSpender(),
-                approveRequest.getValue());
+                approveRequest.getValue(),
+                approveRequest.getOwner());
     }
 
     @ApiOperation("Get total supply of tokens")
@@ -215,6 +216,7 @@ public class Controller {
     static class ApproveRequest {
         private final String spender;
         private final BigInteger value;
+        private final String owner;
     }
 
     @Data

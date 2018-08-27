@@ -67,8 +67,8 @@ public class ContractService {
     }
 
     public TransactionResponse<ApprovalEventResponse> approve(
-            List<String> privateFor, String contractAddress, String spender, BigInteger value) throws Exception {
-        HumanStandardToken humanStandardToken = load(contractAddress, privateFor,"",false);
+            List<String> privateFor, String contractAddress, String spender, BigInteger value, String ownerAddress) throws Exception {
+        HumanStandardToken humanStandardToken = load(contractAddress, privateFor,ownerAddress,true); 
         try {
             TransactionReceipt transactionReceipt = humanStandardToken
                     .approve(spender, value).send();
