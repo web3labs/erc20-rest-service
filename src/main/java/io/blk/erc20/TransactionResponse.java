@@ -23,4 +23,20 @@ public class TransactionResponse<T> {
         this.transactionHash = transactionHash;
         this.event = event;
     }
+
+    public String getTransactionHash() {
+        return transactionHash;
+    }
+
+    public void setTransactionHash(String transactionHash) {
+        this.transactionHash = transactionHash;
+    }
+
+    public T getEvent() {
+        return event;
+    }
+
+    public void setEvent(T event) {
+        this.event = event;
+    }
 }

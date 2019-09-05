@@ -204,16 +204,55 @@ public class Controller {
 
     @Data
     static class ContractSpecification {
-        private final BigInteger initialAmount;
-        private final String tokenName;
-        private final BigInteger decimalUnits;
-        private final String tokenSymbol;
+        private  BigInteger initialAmount;
+        private  String tokenName;
+        private  BigInteger decimalUnits;
+        private  String tokenSymbol;
+
+        ContractSpecification() {
+        }
+
+        ContractSpecification(BigInteger initialAmount, String tokenName, BigInteger decimalUnits, String tokenSymbol) {
+            this.initialAmount = initialAmount;
+            this.tokenName = tokenName;
+            this.decimalUnits = decimalUnits;
+            this.tokenSymbol = tokenSymbol;
+        }
+
+        public BigInteger getDecimalUnits() {
+            return decimalUnits;
+        }
+
+        public BigInteger getInitialAmount() {
+            return initialAmount;
+        }
+
+        public String getTokenName() {
+            return tokenName;
+        }
+
+        public String getTokenSymbol() {
+            return tokenSymbol;
+        }
     }
 
     @Data
     static class ApproveRequest {
         private final String spender;
         private final BigInteger value;
+
+        ApproveRequest(String spender, BigInteger value) {
+            this.spender = spender;
+            this.value = value;
+        }
+
+        public String getSpender() {
+            return spender;
+        }
+
+        public BigInteger getValue() {
+            return value;
+        }
     }
 
     @Data
@@ -221,12 +260,43 @@ public class Controller {
         private final String from;
         private final String to;
         private final BigInteger value;
+
+        TransferFromRequest(String from, String to, BigInteger value) {
+            this.from = from;
+            this.to = to;
+            this.value = value;
+        }
+
+        public String getFrom() {
+            return from;
+        }
+
+        BigInteger getValue() {
+            return value;
+        }
+
+        public String getTo() {
+            return to;
+        }
     }
 
     @Data
     static class TransferRequest {
         private final String to;
         private final BigInteger value;
+
+        TransferRequest(String to, BigInteger value) {
+            this.to = to;
+            this.value = value;
+        }
+
+        public String getTo() {
+            return to;
+        }
+
+        public BigInteger getValue() {
+            return value;
+        }
     }
 
     @Data
@@ -234,11 +304,34 @@ public class Controller {
         private final String spender;
         private final BigInteger value;
         private final String extraData;
+
+        ApproveAndCallRequest(String spender, BigInteger value, String extraData) {
+            this.spender = spender;
+            this.value = value;
+            this.extraData = extraData;
+        }
+
+        String getSpender() {
+            return spender;
+        }
+
+        BigInteger getValue() {
+            return value;
+        }
+
+        String getExtraData() {
+            return extraData;
+        }
     }
 
     @Data
     static class AllowanceRequest {
         private final String ownerAddress;
         private final String spenderAddress;
+
+        AllowanceRequest(String ownerAddress, String spenderAddress) {
+            this.ownerAddress = ownerAddress;
+            this.spenderAddress = spenderAddress;
+        }
     }
 }
