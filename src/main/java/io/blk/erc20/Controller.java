@@ -238,8 +238,10 @@ public class Controller {
 
     @Data
     static class ApproveRequest {
-        private final String spender;
-        private final BigInteger value;
+        private String spender;
+        private BigInteger value;
+
+        ApproveRequest() {}
 
         ApproveRequest(String spender, BigInteger value) {
             this.spender = spender;
@@ -257,15 +259,18 @@ public class Controller {
 
     @Data
     static class TransferFromRequest {
-        private final String from;
-        private final String to;
-        private final BigInteger value;
+        private String from;
+        private String to;
+        private BigInteger value;
+
+        TransferFromRequest() {}
 
         TransferFromRequest(String from, String to, BigInteger value) {
             this.from = from;
             this.to = to;
             this.value = value;
         }
+
 
         public String getFrom() {
             return from;
@@ -282,13 +287,15 @@ public class Controller {
 
     @Data
     static class TransferRequest {
-        private final String to;
-        private final BigInteger value;
+        private String to;
+        private BigInteger value;
 
         TransferRequest(String to, BigInteger value) {
             this.to = to;
             this.value = value;
         }
+
+        TransferRequest() {}
 
         public String getTo() {
             return to;
@@ -301,9 +308,11 @@ public class Controller {
 
     @Data
     static class ApproveAndCallRequest {
-        private final String spender;
-        private final BigInteger value;
-        private final String extraData;
+        private String spender;
+        private BigInteger value;
+        private String extraData;
+
+        ApproveAndCallRequest() {}
 
         ApproveAndCallRequest(String spender, BigInteger value, String extraData) {
             this.spender = spender;
@@ -326,11 +335,29 @@ public class Controller {
 
     @Data
     static class AllowanceRequest {
-        private final String ownerAddress;
-        private final String spenderAddress;
+        private String ownerAddress;
+        private String spenderAddress;
+
+        AllowanceRequest() {}
 
         AllowanceRequest(String ownerAddress, String spenderAddress) {
             this.ownerAddress = ownerAddress;
+            this.spenderAddress = spenderAddress;
+        }
+
+        public String getOwnerAddress() {
+            return ownerAddress;
+        }
+
+        public void setOwnerAddress(String ownerAddress) {
+            this.ownerAddress = ownerAddress;
+        }
+
+        public String getSpenderAddress() {
+            return spenderAddress;
+        }
+
+        public void setSpenderAddress(String spenderAddress) {
             this.spenderAddress = spenderAddress;
         }
     }

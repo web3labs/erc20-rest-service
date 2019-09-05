@@ -241,6 +241,30 @@ public class ContractService {
             this.to = transferEventResponse._to;
             this.value = transferEventResponse._value.longValueExact();
         }
+
+        public String getFrom() {
+            return from;
+        }
+
+        public void setFrom(String from) {
+            this.from = from;
+        }
+
+        public String getTo() {
+            return to;
+        }
+
+        public void setTo(String to) {
+            this.to = to;
+        }
+
+        public long getValue() {
+            return value;
+        }
+
+        public void setValue(long value) {
+            this.value = value;
+        }
     }
 
     @Getter
@@ -257,6 +281,30 @@ public class ContractService {
             this.owner = approvalEventResponse._owner;
             this.spender = approvalEventResponse._spender;
             this.value = approvalEventResponse._value.longValueExact();
+        }
+
+        public String getOwner() {
+            return owner;
+        }
+
+        public void setOwner(String owner) {
+            this.owner = owner;
+        }
+
+        public String getSpender() {
+            return spender;
+        }
+
+        public void setSpender(String spender) {
+            this.spender = spender;
+        }
+
+        public long getValue() {
+            return value;
+        }
+
+        public void setValue(long value) {
+            this.value = value;
         }
     }
 }

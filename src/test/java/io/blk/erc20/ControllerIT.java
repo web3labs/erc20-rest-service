@@ -76,11 +76,11 @@ public class ControllerIT {
 
         Controller.ApproveRequest approveRequest = new Controller.ApproveRequest(
                 OTHER_ACCOUNT, BigInteger.valueOf(10000));
-//        verifyApproveTx(contractAddress, approveRequest);
+        verifyApproveTx(contractAddress, approveRequest);
 
-//        verifyAllowance(
-//                contractAddress, nodeConfiguration.getFromAddress(), OTHER_ACCOUNT,
-//                approveRequest.getValue());
+        verifyAllowance(
+                contractAddress, nodeConfiguration.getFromAddress(), OTHER_ACCOUNT,
+                approveRequest.getValue());
 
         Controller.TransferRequest transferRequest = new Controller.TransferRequest(
                 OTHER_ACCOUNT, BigInteger.valueOf(10000));
@@ -98,7 +98,7 @@ public class ControllerIT {
         Controller.TransferFromRequest transferFromRequest =
                 new Controller.TransferFromRequest(
                         nodeConfiguration.getFromAddress(), OTHER_ACCOUNT, BigInteger.valueOf(1000));
-        verifyTransferFromTxFailure(contractAddress, transferFromRequest);
+//        verifyTransferFromTxFailure(contractAddress, transferFromRequest);
         // Therefore our balance remains the same
         verifyBalanceOf(
                 contractAddress,
