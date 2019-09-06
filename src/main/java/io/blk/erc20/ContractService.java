@@ -78,10 +78,10 @@ public class ContractService {
         }
     }
 
-    public long totalSupply(String contractAddress) throws Exception {
+    public String totalSupply(String contractAddress) throws Exception {
         HumanStandardToken humanStandardToken = load(contractAddress);
         try {
-            return extractLongValue(humanStandardToken.totalSupply().send());
+            return humanStandardToken.totalSupply().send().toString();
         } catch (InterruptedException | ExecutionException e) {
             throw new RuntimeException(e);
         }
@@ -99,10 +99,10 @@ public class ContractService {
         }
     }
 
-    public long decimals(String contractAddress) throws Exception {
+    public String decimals(String contractAddress) throws Exception {
         HumanStandardToken humanStandardToken = load(contractAddress);
         try {
-            return extractLongValue(humanStandardToken.decimals().send());
+            return humanStandardToken.decimals().send().toString();
         } catch (InterruptedException | ExecutionException e) {
             throw new RuntimeException(e);
         }
@@ -117,10 +117,10 @@ public class ContractService {
         }
     }
 
-    public long balanceOf(String contractAddress, String ownerAddress) throws Exception {
+    public String balanceOf(String contractAddress, String ownerAddress) throws Exception {
         HumanStandardToken humanStandardToken = load(contractAddress);
         try {
-            return extractLongValue(humanStandardToken.balanceOf(ownerAddress).send());
+            return humanStandardToken.balanceOf(ownerAddress).send().toString();
         } catch (InterruptedException | ExecutionException e) {
             throw new RuntimeException(e);
         }
@@ -163,12 +163,12 @@ public class ContractService {
         }
     }
 
-    public long allowance(String contractAddress, String ownerAddress, String spenderAddress) throws Exception {
+    public String allowance(String contractAddress, String ownerAddress, String spenderAddress) throws Exception {
         HumanStandardToken humanStandardToken = load(contractAddress);
         try {
-            return extractLongValue(humanStandardToken.allowance(
+            return humanStandardToken.allowance(
                     ownerAddress, spenderAddress)
-                    .send());
+                    .send().toString();
         } catch (InterruptedException | ExecutionException e) {
             throw new RuntimeException(e);
         }
@@ -186,10 +186,6 @@ public class ContractService {
                 quorum, nodeConfiguration.getFromAddress(), Collections.emptyList());
         return HumanStandardToken.load(
                 contractAddress, quorum, transactionManager, GAS_PRICE, GAS_LIMIT);
-    }
-
-    private long extractLongValue(BigInteger value) {
-        return value.longValueExact();
     }
 
     private TransactionResponse<ApprovalEventResponse>

@@ -39,11 +39,6 @@ public class ControllerIT {
     @Autowired
     private TestRestTemplate restTemplate;
 
-//    @Before
-//    public void setup() {
-//        nodeConfiguration.setNodeEndpoint("");
-//    }
-
     @Test
     public void testConfig() {
         ResponseEntity<NodeConfiguration> responseEntity =
@@ -53,15 +48,10 @@ public class ControllerIT {
     }
 
     @Test
-    public void testDeploy() {
-
-    }
-
-    @Test
     public void testLifeCycle() {
         Controller.ContractSpecification contractSpecification =
                 new Controller.ContractSpecification(
-                        BigInteger.valueOf(1000000), "Quorum Token", BigInteger.valueOf(6), "QT");
+                        BigInteger.valueOf(1000000), "Quorum Token", BigInteger.valueOf(25), "QT");
 
         String contractAddress = deploy(contractSpecification);
 
@@ -98,7 +88,7 @@ public class ControllerIT {
         Controller.TransferFromRequest transferFromRequest =
                 new Controller.TransferFromRequest(
                         nodeConfiguration.getFromAddress(), OTHER_ACCOUNT, BigInteger.valueOf(1000));
-//        verifyTransferFromTxFailure(contractAddress, transferFromRequest);
+        verifyTransferFromTxFailure(contractAddress, transferFromRequest);
         // Therefore our balance remains the same
         verifyBalanceOf(
                 contractAddress,
@@ -235,7 +225,6 @@ public class ControllerIT {
     }
 
     private void verifyPostResponseFailure(ResponseEntity<TransactionResponse> responseEntity) {
-        verifyHttpStatus(responseEntity);
         assertNull(responseEntity.getBody().getEvent());
     }
 

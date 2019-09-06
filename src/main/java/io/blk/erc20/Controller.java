@@ -89,7 +89,7 @@ public class Controller {
 
     @ApiOperation("Get total supply of tokens")
     @RequestMapping(value = "/{contractAddress}/totalSupply", method = RequestMethod.GET)
-    long totalSupply(@PathVariable String contractAddress) throws Exception {
+    String totalSupply(@PathVariable String contractAddress) throws Exception {
         return ContractService.totalSupply(contractAddress);
     }
 
@@ -116,7 +116,7 @@ public class Controller {
 
     @ApiOperation("Get decimal precision of tokens")
     @RequestMapping(value = "/{contractAddress}/decimals", method = RequestMethod.GET)
-    long decimals(@PathVariable String contractAddress) throws Exception {
+    String decimals(@PathVariable String contractAddress) throws Exception {
         return ContractService.decimals(contractAddress);
     }
 
@@ -129,7 +129,7 @@ public class Controller {
     @ApiOperation("Get token balance for address")
     @RequestMapping(
             value = "/{contractAddress}/balanceOf/{ownerAddress}", method = RequestMethod.GET)
-    long balanceOf(
+    String balanceOf(
             @PathVariable String contractAddress,
             @PathVariable String ownerAddress) throws Exception {
         return ContractService.balanceOf(contractAddress, ownerAddress);
@@ -185,7 +185,7 @@ public class Controller {
 
     @ApiOperation("Get quantity of tokens you can transfer on another token holder's behalf")
     @RequestMapping(value = "/{contractAddress}/allowance", method = RequestMethod.GET)
-    long allowance(
+    String allowance(
             @PathVariable String contractAddress,
             @RequestParam String ownerAddress,
             @RequestParam String spenderAddress) throws Exception {
