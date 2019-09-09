@@ -13,11 +13,11 @@ Machine-based, rapid creation of many tokens would not necessarily need these ex
 
 import "./StandardToken.sol";
 
-pragma solidity ^0.4.8;
+pragma solidity ^0.5.2;
 
 contract HumanStandardToken is StandardToken {
 
-    function () {
+    function () external {
         //if ether is sent to this address, send it back.
         revert();
     }
@@ -35,12 +35,12 @@ contract HumanStandardToken is StandardToken {
     string public symbol;                 //An identifier: eg SBX
     string public version = 'H0.1';       //human 0.1 standard. Just an arbitrary versioning scheme.
 
-    function HumanStandardToken(
+    constructor(
         uint256 _initialAmount,
-        string _tokenName,
+        string memory _tokenName,
         uint8 _decimalUnits,
-        string _tokenSymbol
-        ) {
+        string memory _tokenSymbol
+        ) public {
         balances[msg.sender] = _initialAmount;               // Give the creator all initial tokens
         totalSupply = _initialAmount;                        // Update total supply
         name = _tokenName;                                   // Set the name for display purposes
@@ -49,14 +49,16 @@ contract HumanStandardToken is StandardToken {
     }
 
     /* Approves and then calls the receiving contract */
-    function approveAndCall(address _spender, uint256 _value, bytes _extraData) returns (bool success) {
+    function approveAndCall(address _spender, uint256 _value, bytes calldata _extraData) external returns (bool success) {
         allowed[msg.sender][_spender] = _value;
-        Approval(msg.sender, _spender, _value);
+        emit Approval(msg.sender, _spender, _value);
 
         //call the receiveApproval function on the contract you want to be notified. This crafts the function signature manually so one doesn't have to include a contract in here just for this.
         //receiveApproval(address _from, uint256 _value, address _tokenContract, bytes _extraData)
         //it is assumed that when does this that the call *should* succeed, otherwise one would use vanilla approve instead.
-        if(!_spender.call(bytes4(bytes32(keccak256("receiveApproval(address,uint256,address,bytes)"))), msg.sender, _value, this, _extraData)) { revert(); }
+        (bool success, ) = _spender.call(abi.encode("receiveApproval(address,uint256,address,bytes)"));
+
+        if(!success) { revert(); }
         return true;
     }
 }

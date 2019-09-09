@@ -1,4 +1,4 @@
-FROM frolvlad/alpine-oraclejdk8:slim
+FROM frolvlad/alpine-java
 
 RUN apk update && apk upgrade && \
     apk add --no-cache bash git openssh

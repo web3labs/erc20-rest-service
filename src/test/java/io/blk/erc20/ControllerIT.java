@@ -3,6 +3,7 @@ package io.blk.erc20;
 import java.math.BigInteger;
 import java.util.Arrays;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,7 +51,7 @@ public class ControllerIT {
     public void testLifeCycle() {
         Controller.ContractSpecification contractSpecification =
                 new Controller.ContractSpecification(
-                        BigInteger.valueOf(1000000), "Quorum Token", BigInteger.valueOf(6), "QT");
+                        BigInteger.valueOf(1000000), "Quorum Token", BigInteger.valueOf(25), "QT");
 
         String contractAddress = deploy(contractSpecification);
 
@@ -224,7 +225,6 @@ public class ControllerIT {
     }
 
     private void verifyPostResponseFailure(ResponseEntity<TransactionResponse> responseEntity) {
-        verifyHttpStatus(responseEntity);
         assertNull(responseEntity.getBody().getEvent());
     }
 
