@@ -7,6 +7,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.function.Function;
 
 import io.blk.erc20.generated.HumanStandardToken;
+import io.reactivex.annotations.Nullable;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -148,7 +149,7 @@ public class ContractService {
     }
 
     public TransactionResponse<ApprovalEventResponse> approveAndCall(
-            List<String> privateFor, String contractAddress, String spender, BigInteger value,
+            @Nullable List<String> privateFor, String contractAddress, String spender, BigInteger value,
             String extraData) throws Exception {
         HumanStandardToken humanStandardToken = load(contractAddress, privateFor);
         try {

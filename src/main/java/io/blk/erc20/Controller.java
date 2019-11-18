@@ -6,6 +6,7 @@ import java.util.Collections;
 import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 
+import io.reactivex.annotations.Nullable;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;
@@ -193,10 +194,10 @@ public class Controller {
                 contractAddress, ownerAddress, spenderAddress);
     }
 
-    private static List<String> extractPrivateFor(HttpServletRequest request) {
+    private static @Nullable List<String> extractPrivateFor(HttpServletRequest request) {
         String privateFor = request.getHeader("privateFor");
         if (privateFor == null) {
-            return Collections.emptyList();
+            return null;
         } else {
             return Arrays.asList(privateFor.split(","));
         }

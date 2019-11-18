@@ -1,30 +1,41 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<configuration>
-    <!-- Prevent Spring trying to log to /tmp/spring.log on Linux hosts. This needs to be before
-    the defaults include -->
-    <property name="LOG_TEMP" value="./logs" />
-    <include resource="org/springframework/boot/logging/logback/defaults.xml"/>
-    <property name="LOG_FILE" value="${LOG_FILE:-${LOG_PATH:-${LOG_TEMP:-${java.io.tmpdir:-/tmp}}/}spring.log}"/>
-    <!-- Uncomment here and below to allow console logging too -->
-    <!--<include resource="org/springframework/boot/logging/logback/console-appender.xml"/>-->
+<!--<?xml version="1.0" encoding="UTF-8"?>-->
+<!--<configuration>-->
+<!--    &lt;!&ndash; Prevent Spring trying to log to /tmp/spring.log on Linux hosts. This needs to be before-->
+<!--    the defaults include &ndash;&gt;-->
+<!--    <property name="LOG_TEMP" value="./logs" />-->
+<!--    <include resource="org/springframework/boot/logging/logback/defaults.xml"/>-->
+<!--    <property name="LOG_FILE" value="${LOG_FILE:-${LOG_PATH:-${LOG_TEMP:-${java.io.tmpdir:-/tmp}}/}spring.log}"/>-->
+<!--    &lt;!&ndash; Uncomment here and below to allow console logging too &ndash;&gt;-->
+<!--    &lt;!&ndash;<include resource="org/springframework/boot/logging/logback/console-appender.xml"/>&ndash;&gt;-->
 
-    <appender name="ROLLING-FILE"
-              class="ch.qos.logback.core.rolling.RollingFileAppender">
+<!--    <appender name="ROLLING-FILE"-->
+<!--              class="ch.qos.logback.core.rolling.RollingFileAppender">-->
+<!--        <encoder>-->
+<!--            <pattern>${FILE_LOG_PATTERN}</pattern>-->
+<!--        </encoder>-->
+<!--        <file>${LOG_FILE}</file>-->
+<!--        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">-->
+<!--            &lt;!&ndash; daily rollover &ndash;&gt;-->
+<!--            <fileNamePattern>${LOG_FILE}.%d{yyyy-MM-dd}.log</fileNamePattern>-->
+<!--        </rollingPolicy>-->
+<!--    </appender>-->
+
+<!--    <root level="INFO">-->
+<!--        &lt;!&ndash;<appender-ref ref="CONSOLE"/>&ndash;&gt;-->
+<!--        <appender-ref ref="ROLLING-FILE"/>-->
+<!--    </root>-->
+<!--</configuration>-->
+<configuration>
+
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <!-- encoders are assigned the type
+             ch.qos.logback.classic.encoder.PatternLayoutEncoder by default -->
         <encoder>
-            <pattern>${FILE_LOG_PATTERN}</pattern>
+            <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
         </encoder>
-        <file>${LOG_FILE}</file>
-        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <!-- daily rollover -->
-            <fileNamePattern>${LOG_FILE}.%d{yyyy-MM-dd}.log</fileNamePattern>
-        </rollingPolicy>
     </appender>
 
-    <logger name="org.web3j" level="debug" />
-    <logger name="org.apache.http.wire" level="debug" />
-
     <root level="INFO">
-        <!--<appender-ref ref="CONSOLE"/>-->
-        <appender-ref ref="ROLLING-FILE"/>
+        <appender-ref ref="STDOUT" />
     </root>
 </configuration>

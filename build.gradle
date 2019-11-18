@@ -19,9 +19,8 @@ dependencies {
             'io.springfox:springfox-swagger2:2.7.0',
             'io.springfox:springfox-swagger-ui:2.7.0',
             'org.projectlombok:lombok:1.16.16',
-            'org.web3j:quorum:4.+'
-            'io.reactivex:rxjava:3.1.0'
-            'com.anupcowkur:reservoir:3.1.0'
+            'org.web3j:quorum:4.+',
+            'io.reactivex.rxjava2:rxjava:2.2.0'
 
     testCompile 'junit:junit:4.12',
             'org.springframework.boot:spring-boot-starter-test:1.5.3.RELEASE'
