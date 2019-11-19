@@ -1,6 +1,6 @@
 # Port to run on
 server:
-  port: ${port:8080}
+  port: ${port:8081}
 
 # Our log file path and name
 logging:

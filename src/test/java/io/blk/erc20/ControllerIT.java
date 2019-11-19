@@ -3,7 +3,7 @@ package io.blk.erc20;
 import java.math.BigInteger;
 import java.util.Arrays;
 
-import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,7 +14,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import static junit.framework.TestCase.assertNull;
 import static org.hamcrest.CoreMatchers.is;
@@ -22,10 +22,9 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
-import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
 
-@RunWith(SpringRunner.class)
-@SpringBootTest(webEnvironment = RANDOM_PORT)
+@RunWith(SpringJUnit4ClassRunner.class)
+@SpringBootTest(webEnvironment= SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class ControllerIT {
 
     // key2
@@ -39,6 +38,8 @@ public class ControllerIT {
     @Autowired
     private TestRestTemplate restTemplate;
 
+
+
     @Test
     public void testConfig() {
         ResponseEntity<NodeConfiguration> responseEntity =
@@ -47,6 +48,7 @@ public class ControllerIT {
         assertNotNull(responseEntity.getBody());
     }
 
+    @Ignore
     @Test
     public void testLifeCycle() {
         Controller.ContractSpecification contractSpecification =

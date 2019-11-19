@@ -8,12 +8,12 @@ import org.springframework.stereotype.Component;
  * Node configuration bean.
  */
 @Data
-@ConfigurationProperties
+@ConfigurationProperties("io.blk.erc20")
 @Component
 public class NodeConfiguration {
 
-    private String nodeEndpoint;
-    private String fromAddress;
+    private String nodeEndpoint = System.getProperty("nodeEndpoint");
+    private String fromAddress = System.getProperty("fromAddress");
 
     public String getNodeEndpoint() {
         return nodeEndpoint;

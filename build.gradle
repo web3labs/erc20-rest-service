@@ -1,29 +1,48 @@
 plugins {
-    id 'org.springframework.boot' version '1.5.3.RELEASE'
+    id 'java'
+    id 'idea'
+    id 'eclipse'
+    id 'application'
+    id 'org.springframework.boot' version '2.1.7.RELEASE'
 }
 
-apply plugin: 'java'
-apply plugin: 'idea'
-
-sourceCompatibility = 1.8
+mainClassName = 'io.blk.erc20.Application'
 
 group 'io.blk'
 version '0.1.0'
+
+sourceCompatibility = 1.8
 
 repositories {
     mavenCentral()
 }
 
 dependencies {
-    compile 'org.springframework.boot:spring-boot-starter-web:1.5.3.RELEASE',
+    compile 'org.springframework.boot:spring-boot-starter-web:2.1.7.RELEASE',
             'io.springfox:springfox-swagger2:2.7.0',
             'io.springfox:springfox-swagger-ui:2.7.0',
             'org.projectlombok:lombok:1.16.16',
             'org.web3j:quorum:4.+',
-            'io.reactivex.rxjava2:rxjava:2.2.0'
+            'org.web3j:core:4.+',
+            'io.reactivex.rxjava2:rxjava:2.2.0',
+            'com.fasterxml.jackson:jackson-bom:2.9.4',
+            'org.apache.httpcomponents:httpclient:4.5.3'
 
     testCompile 'junit:junit:4.12',
-            'org.springframework.boot:spring-boot-starter-test:1.5.3.RELEASE'
+            'org.springframework.boot:spring-boot-starter-test:2.1.7.RELEASE',
 
-    implementation("org.web3j:contracts:4.2.0") { exclude group: 'org.web3j' }
+
+            implementation("org.web3j:contracts:4.2.0") { exclude group: 'org.web3j' }
+}
+
+run {
+    /* Can pass all the properties: */
+    systemProperties System.getProperties()
+
+    /* Or just each by name: */
+    systemProperty "nodeEndpoint", System.getProperty("nodeEndpoint")
+    systemProperty "fromAddress", System.getProperty("fromAddress")
+
+    /* Need to split the space-delimited value in the exec.args */
+    args System.getProperty("exec.args", "").split()
 }
